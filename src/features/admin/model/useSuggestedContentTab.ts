@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { API_HOST_IP } from "@/shared/config/env";
-import { GetTmdbImage } from "@/shared/api/tmdb";
+
 import { getToken } from "@/shared/lib/auth";
 import type { SuggestedContentReportResponse } from "@/entities/content/model/types";
 
@@ -15,10 +15,17 @@ const STATUS_OPTIONS = [
 export interface TmdbInfo {
   title: string;
   posterPath: string | null;
+  backdropPath: string | null;
   overview: string;
   voteAverage: number;
   releaseDate: string;
   type: string;
+  genres: { id: number; name: string }[];
+  runtime: number | null;
+  tagline: string | null;
+  status: string | null;
+  numberOfSeasons: number | null;
+  numberOfEpisodes: number | null;
 }
 
 export interface EnrichedReport extends SuggestedContentReportResponse {
@@ -34,9 +41,8 @@ function statusLabel(statusId: number) {
   return STATUS_OPTIONS.find((s) => s.id === statusId)?.label ?? "Desconocido";
 }
 
-function guessType(message: string): string {
-  const lower = message.toLowerCase();
-  if (lower.includes("serie") || lower.includes("series")) return "tv";
+function getTmdbType(contentTypeName: string | null): string {
+  if (contentTypeName === "tv-show") return "tv";
   return "movie";
 }
 
@@ -61,7 +67,7 @@ export function useSuggestedContentTab() {
             data
               .filter((r) => r.tmdbId)
               .map(async (r) => {
-                const type = guessType(r.message);
+                const type = getTmdbType(r.contentTypeName);
                 const tmdbRes = await fetch(`/api/tmdb?id=${r.tmdbId}&type=${type}`);
                 if (!tmdbRes.ok) return { id: r.id, info: null };
                 const tmdbData = await tmdbRes.json();
@@ -71,10 +77,17 @@ export function useSuggestedContentTab() {
                   info: {
                     title: tmdbData.title || tmdbData.name || "",
                     posterPath: tmdbData.poster_path || null,
+                    backdropPath: tmdbData.backdrop_path || null,
                     overview: tmdbData.overview || "",
                     voteAverage: tmdbData.vote_average || 0,
                     releaseDate: tmdbData.release_date || tmdbData.first_air_date || "",
                     type: tmdbData.title ? "movie" : "tv",
+                    genres: tmdbData.genres || [],
+                    runtime: tmdbData.runtime || tmdbData.episode_run_time?.[0] || null,
+                    tagline: tmdbData.tagline || null,
+                    status: tmdbData.status || null,
+                    numberOfSeasons: tmdbData.number_of_seasons || null,
+                    numberOfEpisodes: tmdbData.number_of_episodes || null,
                   } as TmdbInfo,
                 };
               })

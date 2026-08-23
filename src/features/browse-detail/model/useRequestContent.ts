@@ -8,7 +8,7 @@ export function useRequestContent() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
 
-  async function submit(tmdbId: number) {
+  async function submit(tmdbId: number, type: "movie" | "tv") {
     if (status === "sending") return;
 
     const token = getToken();
@@ -26,10 +26,11 @@ export function useRequestContent() {
     setStatus("sending");
     try {
       const trimmed = message.trim();
-      const body: { userId: number; message: string; tmdbId: number } = {
+      const body = {
         userId: Number(userId),
         message: trimmed || `Solicitud de contenido TMDB #${tmdbId}`,
         tmdbId,
+        contentTypeId: type === "movie" ? 1 : 2,
       };
 
       const res = await fetch(`${API_HOST_IP}/suggested-content-reports`, {

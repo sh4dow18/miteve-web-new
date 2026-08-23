@@ -15,6 +15,7 @@ export default function BrowseDetailTV({ movie }: Props) {
   const {
     showModal,
     hasToken,
+    alreadyRequested,
     textareaRef,
     message,
     setMessage,
@@ -125,12 +126,18 @@ export default function BrowseDetailTV({ movie }: Props) {
             )}
 
             <div className="flex flex-wrap gap-4">
-              <button
-                onClick={openModal}
-                className="flex w-full sm:w-auto items-center justify-center gap-3 bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded text-base sm:text-xl font-semibold hover:bg-gray-200 transition-colors"
-              >
-                Solicitar contenido
-              </button>
+              {alreadyRequested ? (
+                <span className="flex w-full sm:w-auto items-center justify-center gap-3 bg-gray-700 text-gray-400 px-6 py-3 sm:px-8 sm:py-4 rounded text-base sm:text-xl font-semibold cursor-not-allowed">
+                  Ya se solicitó este contenido
+                </span>
+              ) : (
+                <button
+                  onClick={openModal}
+                  className="flex w-full sm:w-auto items-center justify-center gap-3 bg-white text-black px-6 py-3 sm:px-8 sm:py-4 rounded text-base sm:text-xl font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Solicitar contenido
+                </button>
+              )}
             </div>
           </div>
         </div>

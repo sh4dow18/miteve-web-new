@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronDown, Lightbulb, Loader2, X, XCircle } from "lucide-react";
+import Link from "next/link";
+import { ChevronDown, Eye, Lightbulb, Loader2, X, XCircle } from "lucide-react";
 import { GetTmdbImage } from "@/shared/api/tmdb";
 import { useSuggestedContentTab } from "@/features/admin/model/useSuggestedContentTab";
 
@@ -119,8 +120,18 @@ export function SuggestedContentTab() {
                     )}
                   </div>
 
-                  {/* Status selector */}
-                  <div className="shrink-0 self-start">
+                  {/* Actions */}
+                  <div className="shrink-0 self-start flex flex-col gap-2">
+                    {tmdb && report.tmdbId && (
+                      <Link
+                        href={`/browse/${report.tmdbId}?type=${tmdb.type}`}
+                        className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 transition-colors text-sm"
+                      >
+                        <Eye className="w-4 h-4" />
+                        <span>Ver detalle</span>
+                      </Link>
+                    )}
+
                     {updating === report.id ? (
                       <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-gray-800 text-gray-400 text-sm">
                         <Loader2 className="w-4 h-4 animate-spin" />
